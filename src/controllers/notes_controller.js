@@ -32,6 +32,19 @@ const createNote = async (request, response) => {
     response.json({note: newNote})
 }
 
+const updateNote = async (request, response) => {
+    let updatedNote = await Note.findByIdAndUpdate(request.params.id, request.body, {new: true})
+        .catch(error => { // mongoose methods can handle errors with catch
+            console.log("Some error while accessing data:\n" + error)
+            response.status(404)
+            })
+        if (updatedNote) { // if we can find the note, update it and save the changes
+        response.send(updatedNote)
+        } else { // if the note ID doesn't exist it will be undefined and return an error message
+        response.json({error: "ID not found"})
+}
+}
+
 const deleteAllNotes = async (request, response) => {
     await Note.deleteMany({})
     response.json({
@@ -53,4 +66,4 @@ const deleteNote = async (request, response) => {
     }
 }
 
-module.exports = {getNotes, getNote, createNote, deleteAllNotes, deleteNote}
+module.exports = {getNotes, getNote, createNote, updateNote, deleteAllNotes, deleteNote}
