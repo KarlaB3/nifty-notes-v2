@@ -1,9 +1,22 @@
 const Note = require('../models/notes')
 
 const getNotes = async (request, response) => {
-
-    let notes = await Note.find()
-    response.send(notes)
+    console.log(request.query)
+    let notes
+    if (Object.keys(request.query).length > 0) { 
+        // Cover true and false cases for boolean query string
+        if (request.query.isCompleted === "true")
+            notes = await Note.find({isCompleted: true})     
+        else if (request.query.isCompleted === "false")
+            notes = await Note.find({isCompleted: false})
+        else {
+            notes = await Note.find()
+        }
+        response.send(notes)
+    } else {
+        notes = await Note.find()
+        response.send(notes)
+    }
 }
 
 const getNote = async (request, response) => {
@@ -42,7 +55,7 @@ const updateNote = async (request, response) => {
         response.send(updatedNote)
         } else { // if the note ID doesn't exist it will be undefined and return an error message
         response.json({error: "ID not found"})
-}
+    }
 }
 
 const deleteAllNotes = async (request, response) => {
